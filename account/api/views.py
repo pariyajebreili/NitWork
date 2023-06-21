@@ -1,18 +1,40 @@
 from rest_framework import generics, status,  permissions
 from rest_framework.response import Response
-from .serializers import StudentSignupSerializer, UserSerializer, CompanySignupSerializer
+from .serializers import StudentSignupSerializer, UserSerializer, CompanySignupSerializer, CompanySerializer
 from .permissions1 import IsCompany, IsStudent
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from account.models import Company
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 
+
+class CompanyList(APIView):
+    def get(self, request, format=None):
+        companies = Company.objects.all()
+        serializer = CompanySerializer(companies, many=True)
+        return Response(serializer.data)
+
+
+
+class CompanyDetailView(generics.RetrieveAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    #permission_classes = [IsAuthenticated]
+    lookup_field = 'identifier'
+    lookup_url_kwarg = 'identifier'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return self.retrieve(request, *args, **kwargs)
+        except Company.DoesNotExist:
+            return Response({'error': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 
@@ -106,4 +128,7 @@ class CompanyUpdateView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+
 

@@ -25,10 +25,9 @@ def create_auth_token(sender,instance=None, created=False, **kwargs):
 
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="freelancer")
-    username = models.CharField(max_length=30, unique=True, default=uuid.uuid4) #student name
-    identifier = models.CharField(max_length=30, unique=True, default=uuid.uuid4)
-    #email = models.EmailField(unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="student")
+    username = models.CharField(max_length=30, unique=True) #student name
+    identifier = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=128)
 
     def __str__(self):
@@ -36,9 +35,9 @@ class Student(models.Model):
     
 
 class Company(models.Model):
-    user = models.OneToOneField(User,related_name="client",on_delete=models.CASCADE)
-    username = models.CharField(max_length=30, unique=True, default=uuid.uuid4) ##company name
-    identifier = models.CharField(max_length=30, unique=True, default=uuid.uuid4)
+    user = models.OneToOneField(User,related_name="company",on_delete=models.CASCADE)
+    username = models.CharField(max_length=30, unique=True) ##company name
+    identifier = models.CharField(max_length=30, unique=True)
     ceo_name = models.CharField(max_length=255)
     address = models.CharField(max_length=500)
     description = models.TextField()

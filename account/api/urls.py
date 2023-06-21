@@ -1,7 +1,8 @@
 from django.urls import path
 from . import views
-from .views import StudentSignupView, CompanySignupView, CompanyOnlyView, StudentOnlyView,user_LoginAPI, StudentUpdateView, CompanyUpdateView
+from .views import StudentSignupView, CompanySignupView, CompanyOnlyView, StudentOnlyView,user_LoginAPI, StudentUpdateView, CompanyUpdateView,CompanyList,CompanyDetailView
 from knox import views as knox_views
+
 
 urlpatterns = [
     path('signup/student/', StudentSignupView.as_view()),
@@ -13,4 +14,7 @@ urlpatterns = [
     path('student/dashboard/',StudentOnlyView.as_view()),
     path('student_update/',StudentUpdateView.as_view()),
     path('company_update/',CompanyUpdateView.as_view()),
+    path('companies/', CompanyList.as_view(), name='company-list'),
+    path('company_detail/<str:identifier>/', CompanyDetailView.as_view(), name='company_detail'),
+
 ]

@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     'account',
     'rest_framework.authtoken',
     'knox',
-    #'rest_framework_jwt',
-    #'dj_rest_auth'
+    'comment',
 ]
 
 MIDDLEWARE = [
