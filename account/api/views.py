@@ -1,12 +1,12 @@
-from rest_framework import generics, status
+from rest_framework import generics, status,  permissions
 from rest_framework.response import Response
-from .serializers import FreelanceSignupSerializer, UserSerializer, ClientSignupSerializer, CustomAuthTokenSerializer
+from .serializers import FreelanceSignupSerializer, UserSerializer, ClientSignupSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 #from rest_framework.authtoken import ObtainAuthToken
 from rest_framework.views import APIView
-from .permissions import IsClientUser, IsFreelanceUser
-from account.api import permissions
+from .permissions1 import IsClientUser, IsFreelanceUser
+from account.api import permissions1
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
@@ -15,7 +15,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from knox.models import AuthToken
+from knox.views import LoginView as KnoxLoginView
+from django.contrib.auth import login
 
 class FreelanceSignupView(generics.GenericAPIView):
     serializer_class = FreelanceSignupSerializer
@@ -25,10 +28,10 @@ class FreelanceSignupView(generics.GenericAPIView):
         user = serializer.save()
         return Response({
             "user":UserSerializer(user, context=self.get_serializer_context()).data,
-            "token": Token.objects.get(user=user).key,
+            "token": AuthToken.objects.create(user)[1],
             "message" : "account created successfuly"
         })
-    
+
 
 
 class ClientSignupView(generics.GenericAPIView):
@@ -45,8 +48,23 @@ class ClientSignupView(generics.GenericAPIView):
     
 
 
-class CustomAuthToken(TokenObtainPairView):
-    serializer_class = CustomAuthTokenSerializer
+
+class user_LoginAPI(KnoxLoginView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        #print(serializer)
+        serializer.is_valid(raise_exception=True)
+        #print(serializer.is_valid(raise_exception=True))
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super(user_LoginAPI, self).post(request, format=None)
+    
+
+
+#class CustomAuthToken(TokenObtainPairView):
+#    serializer_class = CustomAuthTokenSerializer
     #def post(self, request, *args, **kwargs):
     #        response = super().post(request, *args, **kwargs)
     #        token = response.data.get('access', None)
@@ -120,21 +138,7 @@ class CustomAuthToken(TokenObtainPairView):
 #        request.auth.delete()
 #        return Response(status=status.HTTP_200_OK)
     
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
-from rest_framework import status
 
-class LogoutView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, format=None):
-        if hasattr(request, 'auth') and request.auth is not None:
-            request.auth.delete()
-        return Response(status=status.HTTP_200_OK)
 
 
 class ClientOnlyView(generics.RetrieveAPIView):
@@ -150,4 +154,5 @@ class FreelanceOnlyView(generics.RetrieveAPIView):
     
     def get_object(self):
         return self.request.user
-    
+
+

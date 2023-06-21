@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'rest_framework.authtoken',
-    #'knox'
+    'knox',
     #'rest_framework_jwt',
     #'dj_rest_auth'
 ]
@@ -114,8 +114,8 @@ ACCOUNT_UNIQUE_EMAIL = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         #'rest_framework.authentication.Token ',
-        'rest_framework.authentication.TokenAuthentication',
-        #'knox.auth.TokenAuthentication', 
+        #'rest_framework.authentication.TokenAuthentication',
+        'knox.auth.TokenAuthentication',
         #'rest_framework.authentication.SessionAuthentication',
     ]
 }

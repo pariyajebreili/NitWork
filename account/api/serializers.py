@@ -1,5 +1,6 @@
 from rest_framework import serializers
-
+from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from account.models import User, Freelancer, Client
 
 
@@ -55,15 +56,6 @@ class ClientSignupSerializer(serializers.ModelSerializer):
         Client.objects.create(user=user)
         return user
     
-    
-from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-class CustomAuthTokenSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        refresh = self.get_token(self.user)
-        data['refresh'] = str(refresh)
-        #data['access'] = str(refresh.access_token)
-        data['user'] = UserSerializer(self.user).data
-        return data
+
+
