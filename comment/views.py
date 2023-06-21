@@ -1,65 +1,84 @@
 
-#from rest_framework.decorators import api_view,permission_classes
-#from rest_framework.response import Response
-#from rest_framework import status
-#from .models import Comment,Like,Dislike
-#from .serializers import Company_serializers,Comment_serializers,Show_Comment_serializers,likeSerializer,dislikeSerializer
-#from rest_framework.permissions import IsAuthenticated,IsAdminUser
-#from rest_framework import filters
-#from rest_framework import generics
-#import datetime
-#from django.db.models import Q
-#from account.models import Student, Company
-#from rest_framework.authentication import TokenAuthentication
-#from rest_framework.permissions import IsAuthenticated
-#from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Comment,Like,Dislike
+from .serializers import Comment_serializers,Show_Comment_serializers,likeSerializer,dislikeSerializer
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework import filters
+from rest_framework import generics
+import datetime
+from django.db.models import Q
+from account.models import Student, Company
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 
-#@permission_classes([IsAuthenticated])    
-#@api_view(["POST"])       
-#def send_comment(request,f_id):
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime
+from .models import Company, Comment
+from rest_framework.exceptions import APIException
+from rest_framework import status
 
-#    try:
-#        company=Company.objects.get(id=f_id)
-#    except company.DoesNotExist:
-#        return Response(status=status.HTTP_404_NOT_FOUND)
 
-#    User = UserProfile()
-#    authenticated_user = User.objects.get(id=user.id)
-#    UserProfile.objects.all()
-#    #UserProfile = authenticated_user.userprofile 
-#    new_comment=Comment_serializers(data=request.data)
-#    if new_comment.is_valid(raise_exception=True):
-
-#        date1=datetime.datetime.now()
-#        user = request.user
-#        new_comment2=Comment(company=company,user=UserProfile,message=new_comment.data["message"],date=date1)
-
-#        new_comment2.save()
-#        n_comment=Show_Comment_serializers(instance=new_comment2)
-#        return Response({'message':'comment saved succsesfully','status':'success','comment_for_company':company.company_id,'comment':n_comment.data,
-#        },status=status.HTTP_201_CREATED)
-
-#    return Response(new_comment.errors)
+class NotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = 'The requested resource was not found.'
+    default_code = 'not_found'
 
 
 
-#@api_view(["GET"])
-##@permission_classes([IsAuthenticated])                
-#def show_comment(request,f_id):
+@permission_classes([IsAuthenticated])
+@api_view(["POST"])       
+def send_comment(request, id_company):
+    try:
+        company = Company.objects.get(id=id_company)
 
-#    try:
-#        company=CompanyProfile.objects.get(id=f_id)
+    except Company.DoesNotExist:
+        raise NotFoundError('Company not found.')
+    
+    company = Company.objects.get(id=id_company)
 
-#    except company.DoesNotExist:
+    if request.method == "POST":
+        new_comment = Comment_serializers(data=request.data)
+        if new_comment.is_valid(raise_exception=True):
+            date1 = datetime.now()
+            student = request.user.student  # assuming request.user is a Student object
+            user = student.user  # get the User object associated with the Student object
+            new_comment2 = Comment(company=company, user=user, message=new_comment.data["message"], date=date1)
+            new_comment2.save()
+            n_comment = Show_Comment_serializers(instance=new_comment2)
+            return Response({
+                'message': 'Comment saved successfully',
+                'status': 'success',
+                'comment_for_company': company.id,
+                'comment': n_comment.data,
+            }, status=status.HTTP_201_CREATED)
 
-#        return Response(status=status.HTTP_404_NOT_FOUND) 
+        return Response(new_comment.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#    comment=company.comments
 
-#    c_serialize=Show_Comment_serializers(instance=comment,many=True)
 
-#    return Response({"comments":c_serialize.data})
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])                
+def show_comment(request,id_company):
+
+    try:
+        company=Company.objects.get(id=id_company)
+
+    except company.DoesNotExist:
+
+        return Response(status=status.HTTP_404_NOT_FOUND) 
+
+    comment=company.comments
+
+    c_serialize=Show_Comment_serializers(instance=comment,many=True)
+
+    return Response({"comments":c_serialize.data})
 
 
   

@@ -27,10 +27,12 @@ class StudentSignupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')
-        user = User.objects.create_user(**validated_data)
-        user.is_freelancer = True
+        username = validated_data.pop('username', None)
+        identifier = validated_data.pop('identifier', None)
+        user = User.objects.create_user(username=username, identifier=identifier,**validated_data)
+        user.is_student = True
         user.save()
-        Student.objects.create(user=user)
+        Student.objects.create(user=user,username=username, identifier=identifier)
         return user
 
 

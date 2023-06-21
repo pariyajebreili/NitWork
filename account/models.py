@@ -41,6 +41,7 @@ class Company(models.Model):
     ceo_name = models.CharField(max_length=255)
     address = models.CharField(max_length=500)
     description = models.TextField()
+    image = models.ImageField(upload_to='company_images/', null=True, blank=True)
     password = models.CharField(max_length=128)
 
     def __str__(self):
