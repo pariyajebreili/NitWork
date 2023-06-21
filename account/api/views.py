@@ -1,27 +1,23 @@
 from rest_framework import generics, status,  permissions
 from rest_framework.response import Response
-from .serializers import FreelanceSignupSerializer, UserSerializer, ClientSignupSerializer
-from rest_framework.authtoken.models import Token
-from rest_framework.authentication import TokenAuthentication
-#from rest_framework.authtoken import ObtainAuthToken
-from rest_framework.views import APIView
-from .permissions1 import IsClientUser, IsFreelanceUser
-from account.api import permissions1
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.decorators import api_view, authentication_classes
+from .serializers import StudentSignupSerializer, UserSerializer, CompanySignupSerializer
+from .permissions1 import IsCompany, IsStudent
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth import login
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
-class FreelanceSignupView(generics.GenericAPIView):
-    serializer_class = FreelanceSignupSerializer
+
+
+
+class StudentSignupView(generics.GenericAPIView):
+    serializer_class = StudentSignupSerializer
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception = True)
@@ -34,15 +30,15 @@ class FreelanceSignupView(generics.GenericAPIView):
 
 
 
-class ClientSignupView(generics.GenericAPIView):
-    serializer_class = ClientSignupSerializer
+class CompanySignupView(generics.GenericAPIView):
+    serializer_class = CompanySignupSerializer
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception = True)
         user = serializer.save()
         return Response({
             "user":UserSerializer(user, context=self.get_serializer_context()).data,
-            "token": Token.objects.get(user=user).key,
+            "token": AuthToken.objects.create(user)[1],
             "message" : "account created successfuly"
         })
     
@@ -63,96 +59,51 @@ class user_LoginAPI(KnoxLoginView):
     
 
 
-#class CustomAuthToken(TokenObtainPairView):
-#    serializer_class = CustomAuthTokenSerializer
-    #def post(self, request, *args, **kwargs):
-    #        response = super().post(request, *args, **kwargs)
-    #        token = response.data.get('access', None)
-    #        if token:
-    #            request.auth.delete()
-    #        return response
-    
-    #def post(self, request, *args, **kwargs):
-        #serializer = self.serializer_class(data = request.data, context = {'request':request})
-        #serializer.is_valid(raise_exception = True)
-        #user = serializer.validated_data['user']
-        #token=Token.objects.get_or_create(user=user)
-        #return Response({
-        #    'token':token.key,
-        #    'user_id':user.pk,
-        #    'is_client':user.is_client
-        #})
-
-
-#@api_view(['POST'])
-#@authentication_classes((TokenAuthentication,))
-#def CustomAuthToken(request):
-#    user = request.user
-#    token = Token.objects.get(user=user)
-#    return Response({
-#        'token': token.key,
-#        'user_id': user.pk,
-#        'is_client': user.is_client
-#    })
-
-
-
-#class CustomAuthToken(TokenObtainPairView):
-
-#    @classmethod
-#    def get_token(cls, user):
-#        token = get_token(user)
-#        token['is_client'] = user.is_client
-#        return token
-    
-#    def get_user(self, request):
-#        user = request.user
-#        if user.is_authenticated:
-#            return user
-#        return None
-    
-#    def post(self, request, *args, **kwargs):
-#        response = super().post(request, *args, **kwargs)
-#        token = response.data['access']
-#        #token2 = response.data[get_token]
-#        user = self.get_user(request)
-#        a = self.get_token(user)
-#        print(a)
-#        if user is not None:
-#            user_id = user.pk
-#            is_client = user.is_client
-#        else:
-#            user_id = None
-#            is_client = None
-    
-#        return Response({
-#            'token': token,
-#            'user_id': user_id,
-#            'is_client': is_client
-#        }, status=status.HTTP_200_OK)
-  
-
-
-#class LogoutView(APIView):
-#    def post(self, request, format=None):
-#        request.auth.delete()
-#        return Response(status=status.HTTP_200_OK)
-    
-
-
-
-class ClientOnlyView(generics.RetrieveAPIView):
-    permission_classes=[IsAuthenticated&IsClientUser]
+class CompanyOnlyView(generics.RetrieveAPIView):
+    permission_classes=[IsAuthenticated&IsCompany]
     serializer_class=UserSerializer
     def get_object(self):
         return self.request.user
 
 
-class FreelanceOnlyView(generics.RetrieveAPIView):
-    permission_classes=[IsAuthenticated&IsFreelanceUser]
+class StudentOnlyView(generics.RetrieveAPIView):
+    permission_classes=[IsAuthenticated&IsStudent]
     serializer_class=UserSerializer
     
     def get_object(self):
         return self.request.user
+    
 
+
+
+
+class StudentUpdateView(generics.UpdateAPIView):
+    serializer_class = StudentSignupSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+
+
+class CompanyUpdateView(generics.UpdateAPIView):
+    serializer_class = CompanySignupSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 

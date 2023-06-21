@@ -4,11 +4,15 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractUser
 from rest_framework.authtoken.models import Token
-
+import uuid
 
 class User(AbstractUser):
-    is_freelancer = models.BooleanField(default=False)
-    is_client = models.BooleanField(default=False)
+    identifier = models.IntegerField(unique=True, null=True, blank=True)
+    is_student = models.BooleanField(default=False)
+    is_company = models.BooleanField(default=False)
+    ceo_name = models.CharField(max_length=100)
+    address = models.CharField(max_length=500)
+    description = models.TextField()
 
     def __str__(self):
         return self.username
@@ -18,21 +22,27 @@ def create_auth_token(sender,instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user = instance)
 
-class Freelancer(models.Model):
+
+
+class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="freelancer")
-    phone = models.CharField(max_length=20, null=True, blank=True)
-    skills = models.CharField(max_length=500, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    username = models.CharField(max_length=30, unique=True, default=uuid.uuid4) #student name
+    identifier = models.CharField(max_length=30, unique=True, default=uuid.uuid4)
+    #email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)
 
     def __str__(self):
-        return self.user.username
+        return str(self.user.identifier)
     
 
-class Client(models.Model):
+class Company(models.Model):
     user = models.OneToOneField(User,related_name="client",on_delete=models.CASCADE)
-    company_name = models.CharField(max_length=255)
-    skills = models.CharField(max_length=250)
+    username = models.CharField(max_length=30, unique=True, default=uuid.uuid4) ##company name
+    identifier = models.CharField(max_length=30, unique=True, default=uuid.uuid4)
+    ceo_name = models.CharField(max_length=255)
+    address = models.CharField(max_length=500)
     description = models.TextField()
+    password = models.CharField(max_length=128)
 
     def __str__(self):
         return self.company_name

@@ -1,21 +1,21 @@
 from rest_framework import serializers
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from account.models import User, Freelancer, Client
+from account.models import User, Student, Company
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username','email','is_client']
+        fields = ['username','identifier','is_student']
+    
 
 
-
-class FreelanceSignupSerializer(serializers.ModelSerializer):
+class StudentSignupSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type":"password"})
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'password2']
+        model = Student
+        fields = ['username','identifier', 'password', 'password2']
         extra_kwargs={
             'password': {'write_only': True}
         }
@@ -30,15 +30,15 @@ class FreelanceSignupSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         user.is_freelancer = True
         user.save()
-        Freelancer.objects.create(user=user)
+        Student.objects.create(user=user)
         return user
 
 
-class ClientSignupSerializer(serializers.ModelSerializer):
+class CompanySignupSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type":"password"})
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'password2']
+        model = Company
+        fields = ['username','identifier','ceo_name','address','description' ,'password', 'password2']
         extra_kwargs={
             'password': {'write_only': True}
         }
@@ -53,7 +53,7 @@ class ClientSignupSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         user.is_client = True
         user.save()
-        Client.objects.create(user=user)
+        Company.objects.create(user=user)
         return user
     
 

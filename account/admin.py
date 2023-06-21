@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import User, Freelancer, Client
+from .models import User, Student, Company
 # Register your models here.
 
 admin.site.register(User)
-admin.site.register(Freelancer)
-admin.site.register(Client)
+admin.site.register(Student)
+admin.site.register(Company)
