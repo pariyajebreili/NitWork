@@ -2,7 +2,7 @@
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Comment
+from ..models import Comment
 from .serializers import Comment_serializers,Show_Comment_serializers,likeSerializer,dislikeSerializer
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework import filters
@@ -19,7 +19,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
-from .models import Company, Comment
+from ..models import Company, Comment
 from rest_framework.exceptions import APIException
 from rest_framework import status
 

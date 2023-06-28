@@ -1,8 +1,6 @@
 from django.urls import path
-from comment import views
+from comment.api import views
 from .views import ShowCommentView,SendCommentView
-from django.urls import path, include
-from rest_framework import routers
 
 app_name='comments'
 

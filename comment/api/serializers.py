@@ -1,5 +1,5 @@
 from rest_framework import routers, serializers, viewsets
-from .models import Comment,Like,Dislike
+from ..models import Comment,Like,Dislike
 from account.models import Company
 
 
