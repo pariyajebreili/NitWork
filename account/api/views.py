@@ -26,7 +26,7 @@ class CompanyList(APIView):
 class CompanyDetailView(generics.RetrieveAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     lookup_field = 'identifier'
     lookup_url_kwarg = 'identifier'
 

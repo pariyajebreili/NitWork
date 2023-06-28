@@ -21,7 +21,7 @@ class Show_Comment_serializers(serializers.ModelSerializer):
 class likeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ['likeuser']        
+        fields = '__all__ '     
 
 class dislikeSerializer(serializers.ModelSerializer):
     class Meta:
