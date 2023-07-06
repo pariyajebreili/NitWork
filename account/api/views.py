@@ -12,7 +12,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from account.models import Company
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+
 
 
 class CompanyList(APIView):

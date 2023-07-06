@@ -1,20 +1,13 @@
 
-from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import Comment
-from .serializers import Comment_serializers,Show_Comment_serializers,likeSerializer,dislikeSerializer
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
-from rest_framework import filters
-from rest_framework import generics
-import datetime
-from django.db.models import Q
-from account.models import Student, Company, User
-from rest_framework.authentication import TokenAuthentication
+from .serializers import Comment_serializers,Show_Comment_serializers
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.serializers import AuthTokenSerializer
+import datetime
+from account.models import Company
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status

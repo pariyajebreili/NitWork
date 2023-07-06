@@ -106,16 +106,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 AUTH_USER_MODEL = "account.User"
-#ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_UNIQUE_EMAIL = True
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        #'rest_framework.authentication.Token ',
-        #'rest_framework.authentication.TokenAuthentication',
         'knox.auth.TokenAuthentication',
-        #'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
