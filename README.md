@@ -54,8 +54,8 @@ Endpoints:
     http://127.0.0.1:8000/account/ company_update/
     http://127.0.0.1:8000/account/ companies/ [name='company-list']
     http://127.0.0.1:8000/account/ company_detail/<str:identifier>/ [name='company_detail']
-    http://127.0.0.1:8000/account/comment/ send_comment/<int:id_company>/ [name='send_comment']
-    http://127.0.0.1:8000/account/comment/ show_comment/<int:id_company>/ [name='show_comment']
+    http://127.0.0.1:8000/comment/ send_comment/<int:id_company>/ [name='send_comment']
+    http://127.0.0.1:8000/comment/ show_comment/<int:id_company>/ [name='show_comment']
 ```
 
 ## Acknowledgments 🚀
